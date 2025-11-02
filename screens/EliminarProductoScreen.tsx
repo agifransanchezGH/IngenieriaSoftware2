@@ -33,7 +33,7 @@ const DetalleProductoScreen = () => {
                         const resultado = await eliminar(id);
                         if (resultado) {
                             Alert.alert("Éxito", "Producto eliminado correctamente", [
-                                { text: "OK", onPress: () => navigation.navigate("ListaProductos") }
+                                { text: "OK", onPress: () => navigation.replace("ListaProductos") }
                             ]);
                         }
                     }
