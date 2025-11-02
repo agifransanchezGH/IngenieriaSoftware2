@@ -1,36 +1,55 @@
+// Importación de hooks de React y función de servicio
 import { useState } from "react";
 import { agregarProducto, Producto } from "../services/Api";
 
+// Hook personalizado para manejar la lógica de creación de un nuevo producto
 export const useAgregar = () => {
-    const [loading, setLoading] = useState<boolean>(false);
-    const [error, setError] = useState<string | null>(null);
-    const [success, setSuccess] = useState<boolean>(false);
+  // Estado para controlar si se está ejecutando la operación
+  const [loading, setLoading] = useState<boolean>(false);
 
-    const crear = async (producto: Omit<Producto, 'id'>): Promise<{ success: boolean; data?: Producto; error?: string }> => {
-        try {
-            setLoading(true);
-            setError(null);
-            setSuccess(false);
+  // Estado para manejar errores durante la creación
+  const [error, setError] = useState<string | null>(null);
 
-            const nuevoProducto = await agregarProducto(producto as Producto);
+  // Estado para indicar si la creación fue exitosa
+  const [success, setSuccess] = useState<boolean>(false);
 
-            setSuccess(true);
-            return { success: true, data: nuevoProducto };
-        } catch (err) {
-            const errorMsg = "Error al agregar el producto";
-            setError(errorMsg);
-            return { success: false, error: errorMsg };
-        } finally {
-            setLoading(false);
-        }
-    };
+  /**
+   * Función principal para crear un nuevo producto
+   * @param producto - Objeto con los datos del producto (sin ID)
+   * @returns Objeto con estado de éxito, datos creados o mensaje de error
+   */
+  const crear = async (
+    producto: Omit<Producto, 'id'>
+  ): Promise<{ success: boolean; data?: Producto; error?: string }> => {
+    try {
+      setLoading(true);     // Activar indicador de carga
+      setError(null);       // Limpiar errores previos
+      setSuccess(false);    // Reiniciar estado de éxito
 
-    const reset = () => {
-        setError(null);
-        setSuccess(false);
-    };
+      // Llamada al servicio para agregar el producto
+      const nuevoProducto = await agregarProducto(producto as Producto);
 
-    return { crear, loading, error, success, reset };
+      setSuccess(true);     // Marcar éxito
+      return { success: true, data: nuevoProducto }; // Retornar datos creados
+    } catch (err) {
+      const errorMsg = "Error al agregar el producto";
+      setError(errorMsg);   // Guardar mensaje de error
+      return { success: false, error: errorMsg }; // Retornar error
+    } finally {
+      setLoading(false);    // Finalizar carga
+    }
+  };
+
+  /**
+   * Función auxiliar para reiniciar los estados de error y éxito
+   */
+  const reset = () => {
+    setError(null);
+    setSuccess(false);
+  };
+
+  // Retornar funciones y estados para usar en componentes
+  return { crear, loading, error, success, reset };
 };
 
 export default useAgregar;
